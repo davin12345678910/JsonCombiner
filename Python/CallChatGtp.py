@@ -18,7 +18,7 @@ class CallChatGtp:
 
         prompt = prefix + self.json + betweenItemAndHistory + history + currentQuestionPrompt + self.query
 
-        openai.api_key = "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"
+        openai.api_key = "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"
         response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,

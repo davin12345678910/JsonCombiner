@@ -5,3 +5,7 @@ what is in the current image?
 what is in the image?
 what is in the image?
 what is in the image?
+what is in the image?
+can you describe to me what's in the image?
+can you describe to me what is in the image. And if there is an object called person5, don't include the number
+what text is on bottle2?
