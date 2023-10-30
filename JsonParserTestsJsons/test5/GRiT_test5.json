@@ -1,0 +1,24 @@
+{
+  "result": [
+    {
+      "label": "this description is for the smallest object",
+      "score": 0.80480861663818359,
+      "bbox": [
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "label": "this description is for the second smallest object",
+      "score": 0.80480861663818359,
+      "bbox": [
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  ]
+}
