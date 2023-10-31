@@ -76,6 +76,7 @@ class JsonParser:
         """
         #1. This part will sort the maskRCNN objects by their size (in terms of area)
         """
+        print(self.mask_rcnn_json)
         mask_rcnn_objects = self.mask_rcnn_json["results"]
         mask_rcnn_objects = sorted(mask_rcnn_objects,
                 key=lambda x: Polygon(x["mask"]).area)

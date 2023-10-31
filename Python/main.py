@@ -2,17 +2,10 @@ import json
 import JsonParser
 import CallChatGtp
 
-"""
-# these are the jsons that we are going to be passing in
-maskRCNN_file = open("/Users/frukyid/PycharmProjects/JsonCombiner/JsonParserTestsJsons/test10/MaskRCNN_test10.json", "r")
-maskRCNNJson = json.loads(maskRCNN_file.read())
 
-OCR_file = open("/Users/frukyid/PycharmProjects/JsonCombiner/JsonParserTestsJsons/test10/GoogleOCR_test10.json", "r")
-OCRJson = json.loads(OCR_file.read())
-
-GRiT_file = open("/Users/frukyid/PycharmProjects/JsonCombiner/JsonParserTestsJsons/test10/GRiT_test10.json", "r")
-GRiTJson = json.loads(GRiT_file.read())
-"""
+'''''''''
+Note: 
+'''
 
 endpointFile = open("C:\\Users\\davin123\\PycharmProjects\\makeability_real-world-alt-text\\JsonCombiner\\MainJsons\\EndpointResult.json", "r")
 
