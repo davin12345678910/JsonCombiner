@@ -18,7 +18,7 @@ To install JsonCombiner, here are the steps:
 7. `pip install unittest`
 
 ## Important note: 
-if you commit changes from JsonParser to makeability_real-world-alt-text, you will
+if you commit changes you will
 need to generate a new API-Key in order to ask a query to gpt-4:
 Visit: https://platform.openai.com/account/api-keys to generate a new API key
 
