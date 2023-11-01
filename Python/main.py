@@ -4,7 +4,8 @@ import CallChatGtp
 
 
 '''''''''
-Note: 
+Note: we will need to make this into a method which we will be calling from the main.py
+method of the entire repo 
 '''
 
 endpointFile = open("C:\\Users\\davin123\\PycharmProjects\\makeability_real-world-alt-text\\JsonCombiner\\MainJsons\\EndpointResult.json", "r")
