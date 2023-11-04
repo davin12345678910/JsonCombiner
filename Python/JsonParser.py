@@ -76,7 +76,6 @@ class JsonParser:
         """
         #1. This part will sort the maskRCNN objects by their size (in terms of area)
         """
-        print(self.mask_rcnn_json)
         mask_rcnn_objects = self.mask_rcnn_json["results"]
         mask_rcnn_objects = sorted(mask_rcnn_objects,
                 key=lambda x: Polygon(x["mask"]).area)
@@ -531,7 +530,6 @@ class JsonParser:
             if current_hierachy.is_child == False:
                 current_hieracy_json = {}
                 current_json = self.build_hierachy_json(current_hierachy, current_hieracy_json)
-                # print("This is the current JSON: ", current_json)
                 hierachy_json_list.append(current_json)
 
         # Here we will gonna return the finalJson

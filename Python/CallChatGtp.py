@@ -13,7 +13,7 @@ class CallChatGtp:
         betweenItemAndHistory = "Here are the previous questions asked:"
         currentQuestionPrompt = "Here is the current question, don't answer previous questions but take in mind the previous things that were mentioned, don't repeat any coordinates, do not mention coordinates or bounding boxes, do not give me information that is not in the json or history, if you do not have information about something from the json or hierachy state that you do not have information about it, and answer the current question as if you were talking to a five year old: "
 
-        f = open("C:\\Users\\davin123\\PycharmProjects\\makeability_real-world-alt-text\\JsonCombiner\\textFiles\\history.txt", "r")
+        f = open("C:\\Users\\davin\\PycharmProjects\\real-world-alt-text\\JsonCombiner\\textFiles\\history.txt", "r")
         history = f.read()
 
         prompt = prefix + self.json + betweenItemAndHistory + history + currentQuestionPrompt + self.query
