@@ -3,7 +3,7 @@ import json
 
 from shapely import Polygon
 
-import Hierachy
+import JsonCombiner.Python.Hierachy
 
 class JsonParser:
 
@@ -163,12 +163,12 @@ class JsonParser:
 
             # here we will need to check if the name shows up again
             if name_count.__contains__(current_object["label"]):
-                current_hierachy = Hierachy.Hierachy(current_object["mask"], current_object["label"] + str(name_count[current_object["label"]] + 1))
+                current_hierachy = JsonCombiner.Python.Hierachy.Hierachy(current_object["mask"], current_object["label"] + str(name_count[current_object["label"]] + 1))
 
                 # here we will be updating the map
                 name_count[current_object["label"]] = name_count[current_object["label"]] + 1
             else:
-                current_hierachy = Hierachy.Hierachy(current_object["mask"], current_object["label"] + str(1))
+                current_hierachy = JsonCombiner.Python.Hierachy.Hierachy(current_object["mask"], current_object["label"] + str(1))
                 name_count[current_object["label"]] = 1
 
 
@@ -210,7 +210,7 @@ class JsonParser:
             really want it bus->people->shirt
             """
             sorted(hiearchies,
-                   key=lambda x: Hierachy.Hierachy.hierachy_size(x))
+                   key=lambda x: JsonCombiner.Python.Hierachy.Hierachy.hierachy_size(x))
             hiearchies.reverse()
 
         return hiearchies

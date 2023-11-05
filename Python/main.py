@@ -1,6 +1,6 @@
 import json
-import JsonParser
-import CallChatGtp
+import JsonCombiner.Python.JsonParser
+import JsonCombiner.Python.CallChatGtp
 
 def combine_json(query):
     '''''''''
@@ -25,7 +25,7 @@ def combine_json(query):
 
     # This will allow us to make a new Json Parser object
     # Then we can get the string back from the object
-    jsonParser = JsonParser.JsonParser(maskRCNNJson, ocr_json, GRiTJson)
+    jsonParser = JsonCombiner.Python.JsonParser.JsonParser(maskRCNNJson, ocr_json, GRiTJson)
 
     resultJson = jsonParser.return_final_json()
 
@@ -37,7 +37,7 @@ def combine_json(query):
     f = open("C:\\Users\\davin\\PycharmProjects\\real-world-alt-text\\JsonCombiner\\textFiles\\history.txt", "a")
     f.write(query + "\n")
 
-    callChatpGTp = CallChatGtp.CallChatGtp(query, resultJson)
+    callChatpGTp = JsonCombiner.Python.CallChatGtp.CallChatGtp(query, resultJson)
 
     gpt4_results = callChatpGTp.__call__()
     print(gpt4_results)
