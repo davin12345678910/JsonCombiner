@@ -36,16 +36,18 @@ class JsonParser:
     
     Returns: nothing 
     """
-    def __init__(self, mask_rcnn, ocr, grit):
+    def __init__(self, oneformer, ocr, llava):
 
         """
         Here you will be saving the jsons passed in for later use,
         in this case you will be saving maskRCNN, OCR, and GRiT, into
         maskRCNNJson, OCRJson, and GRiTJson respectively
         """
-        self.mask_rcnn_json = mask_rcnn
+        self.oneformer_json = oneformer
         self.ocr_json = ocr
-        self.grit_json = grit
+        self.llava_json = llava
+
+        self.hierachy_dict = {}
 
         self.center = {}
 
@@ -67,18 +69,20 @@ class JsonParser:
     """
     def return_final_json(self):
 
+        print("Called return_final_json")
+
         """
         check to see if any passed in jsons are None, if so return an exception
         """
-        if self.grit_json == None or self.ocr_json == None or self.mask_rcnn_json == None:
+        if self.llava_json == None or self.ocr_json == None or self.oneformer_json == None:
             raise Exception("Cannot pass in a None json object")
 
         """
         #1. This part will sort the maskRCNN objects by their size (in terms of area)
         """
-        mask_rcnn_objects = self.mask_rcnn_json["results"]
+        mask_rcnn_objects = self.oneformer_json["results"]
         mask_rcnn_objects = sorted(mask_rcnn_objects,
-                key=lambda x: Polygon(x["mask"]).area)
+                key=lambda x: Polygon(x["bbox"]).area)
 
 
         """
@@ -94,7 +98,7 @@ class JsonParser:
         and GRiT which contains the descriptions in the image, and give the text and
         descriptions to the smallest valid child objects in each hierachy 
         """
-        complete_hierachies = self.add_in_second_layer(layer_one_hierachy, self.ocr_json, self.grit_json)
+        # complete_hierachies = self.add_in_second_layer(layer_one_hierachy, self.ocr_json, self.llava_json)
 
 
         """
@@ -102,7 +106,7 @@ class JsonParser:
         the hierachies that we built from the three 
         Jsons that were given, mas_rcnn, ocr, and grit
         """
-        final_json = self.build_final_json(complete_hierachies)
+        final_json = self.build_final_json(layer_one_hierachy)
 
         # Here we will return the final results
         return final_json
@@ -123,12 +127,12 @@ class JsonParser:
     Return: a list of hierachy objects that contain the parent-child relationships between the objects
     that came from the mask_rcnn Json without text or descriptions (text or descriptions will be added in second layer)
     """
-    def get_first_layer(self, mask_rcnn_objects):
+    def get_first_layer(self, llava_objects):
 
         """
         Make sure that the json given is not None, or else we will return an exception
         """
-        if mask_rcnn_objects == None:
+        if llava_objects == None:
             raise Exception("Cannot give None mask_rcnn Json")
 
         """
@@ -143,39 +147,26 @@ class JsonParser:
         """
         hiearchies = []
 
-        # here we will keep track of the number of times
-        # a certain name shows up
-        name_count = {}
-
-        for current_object in mask_rcnn_objects:
+        for current_object in llava_objects:
             # Create a Shapely Polygon object
-            polygon = Polygon(current_object["mask"])
+            polygon = Polygon(current_object["bbox"])
 
             # Calculate the centroid
             centroid = polygon.centroid
 
             # Access the x and y coordinates of the centroid
             x, y = centroid.x, centroid.y
-            self.center[str(current_object["mask"])] = [x, y]
+            self.center[str(current_object["bbox"])] = [x, y]
 
             # here we will need to do the thing where if there are multiple objects we will need to append the
             # count for it to the back
-
-            # here we will need to check if the name shows up again
-            if name_count.__contains__(current_object["label"]):
-                current_hierachy = JsonCombiner.Python.Hierachy.Hierachy(current_object["mask"], current_object["label"] + str(name_count[current_object["label"]] + 1))
-
-                # here we will be updating the map
-                name_count[current_object["label"]] = name_count[current_object["label"]] + 1
-            else:
-                current_hierachy = JsonCombiner.Python.Hierachy.Hierachy(current_object["mask"], current_object["label"] + str(1))
-                name_count[current_object["label"]] = 1
+            current_hierachy = JsonCombiner.Python.Hierachy.Hierachy(current_object["bbox"], current_object["name"])
 
 
             for other_hierachy in hiearchies:
 
                 # Here we will get data about the intersection
-                current_polygon = Polygon(current_object["mask"])
+                current_polygon = Polygon(current_object["bbox"])
                 other_polygon = Polygon(other_hierachy.polygon)
                 intersection_area = current_polygon.intersection(other_polygon).area
                 percentage_overlap = intersection_area / other_polygon.area
