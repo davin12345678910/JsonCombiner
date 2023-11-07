@@ -98,7 +98,7 @@ class JsonParser:
         and GRiT which contains the descriptions in the image, and give the text and
         descriptions to the smallest valid child objects in each hierachy 
         """
-        # complete_hierachies = self.add_in_second_layer(layer_one_hierachy, self.ocr_json, self.llava_json)
+        complete_hierachies = self.add_in_second_layer(layer_one_hierachy, self.ocr_json, self.llava_json)
 
 
         """
@@ -106,7 +106,7 @@ class JsonParser:
         the hierachies that we built from the three 
         Jsons that were given, mas_rcnn, ocr, and grit
         """
-        final_json = self.build_final_json(layer_one_hierachy)
+        final_json = self.build_final_json(complete_hierachies)
 
         # Here we will return the final results
         return final_json
@@ -161,6 +161,8 @@ class JsonParser:
             # here we will need to do the thing where if there are multiple objects we will need to append the
             # count for it to the back
             current_hierachy = JsonCombiner.Python.Hierachy.Hierachy(current_object["bbox"], current_object["name"])
+
+            self.hierachy_dict[current_object["name"]] = current_hierachy
 
 
             for other_hierachy in hiearchies:
@@ -318,9 +320,23 @@ class JsonParser:
         for current_hierachy in hierachies:
             visited_text = []
             self.add_in_text(current_hierachy, text_candidates, visited_text)
+
+
+        # this what we will be usign for LLaVA
+        for current_grit in description_candidates:
+
+            print("LLaVA: ", current_grit)
+
+            # now we will need to set the corresponding hierachies description
+            self.hierachy_dict[current_grit["name"]].descriptions = current_grit["caption"]
+
+
+        # this we will need to use for GRiT
+        '''''''''''''''
         for current_hierachy in hierachies:
             visited_descriptions = []
             self.add_in_descriptions(current_hierachy, description_candidates, visited_descriptions)
+        '''
         return copy.deepcopy(hierachies)
 
 
@@ -368,21 +384,25 @@ class JsonParser:
         """
         valid_text = {}
         for text_canidate in text_candidates:
-            text_canidate_polygon = []
-            for point in text_canidate["bbox"]:
-                text_canidate_polygon.append([point[0], point[1]])
+            text_canidate_polygon = None
+
+            text_canidate_polygon = [[round(float(text_canidate[0][0][0]), 1), round(float(text_canidate[0][0][1]), 1)],
+                                     [round(float(text_canidate[0][1][0]), 1), round(float(text_canidate[0][1][1]), 1)],
+                                     [round(float(text_canidate[0][2][0]), 1), round(float(text_canidate[0][2][1]), 1)],
+                                     [round(float(text_canidate[0][3][0]), 1), round(float(text_canidate[0][3][1]), 1)]]
 
             # note we will not need to do this once the json returned accounts for the format wanted
-            self.swap_positions(text_canidate_polygon, 1, 3)
+            # self.swap_positions(text_canidate_polygon, 1, 3)
 
             current_polygon = Polygon(current_hierachy.polygon)
+            # print("THIS IS THE TEXT: ", text_canidate_polygon)
             other_polygon = Polygon(text_canidate_polygon)
             intersection_area = current_polygon.intersection(other_polygon).area
 
             overlap_percentage = intersection_area / other_polygon.area
             if overlap_percentage >= self.OVERLAP_THRESHOLD and overlap_percentage <= 1:
                 if not visited_text.__contains__(text_canidate):
-                    valid_text[text_canidate["text"]] = text_canidate_polygon
+                    valid_text[text_canidate[1]] = text_canidate_polygon
                     visited_text.append(text_canidate)
         current_hierachy.set_text(copy.deepcopy(valid_text))
 
@@ -526,6 +546,8 @@ class JsonParser:
         # Here we will gonna return the finalJson
         final_json = {}
         final_json["items"] = hierachy_json_list
+
+        print("THIS IS THE FINAL JSON: ", final_json)
         return json.dumps(final_json)
 
     """
@@ -580,6 +602,14 @@ class JsonParser:
         # Do not include the bounding box for anything
         current_hierachy_json["descriptions"] = []
         if current_hierachy.descriptions != None:
+            description_json = {"description" : current_hierachy.descriptions}
+            current_hierachy_json["descriptions"].append(description_json)
+
+        # this could possibly be used for GRiT
+        '''''''''
+        # Do not include the bounding box for anything
+        current_hierachy_json["descriptions"] = []
+        if current_hierachy.descriptions != None:
             index = 1
             for description in current_hierachy.descriptions:
                 description_json = {}
@@ -587,6 +617,7 @@ class JsonParser:
                 # description_json["boundingBox"] = current_hierachy.descriptions[description]
                 current_hierachy_json["descriptions"].append(description_json)
                 index = index + 1
+        '''
 
         """
         Here we will be building the string that will represent the 

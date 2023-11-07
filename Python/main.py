@@ -3,7 +3,7 @@ import JsonCombiner.Python.JsonParser
 import JsonCombiner.Python.CallChatGtp
 import openai
 
-def combine_json(oneformer, llava, query):
+def combine_json(oneformer, llava, query, ocr):
     '''''''''
     Note: we will need to make this into a method which we will be calling from the main.py
     method of the entire repo 
@@ -12,7 +12,7 @@ def combine_json(oneformer, llava, query):
     print("went into combineJson!")
 
     # default JSON until the OCR JSON comes in later
-    ocr_json = {"results": []}
+    ocr_json = {"results": ocr}
 
     # This will allow us to make a new Json Parser object
     # Then we can get the string back from the object
@@ -20,8 +20,12 @@ def combine_json(oneformer, llava, query):
 
     resultJson = jsonParser.return_final_json()
 
+    print("This is resultJson: ", resultJson)
+
     # Call ChatGPT
     # response = ChatGPT.call(query, resultJson)
+
+    # let's write the result json into the final json
 
     # print("This is the resulting Json: \n ", resultJson)
 
@@ -41,11 +45,11 @@ def combine_json(oneformer, llava, query):
 
     prompt = prefix + resultJson + betweenItemAndHistory + history + currentQuestionPrompt + query
 
-    openai.api_key = "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"
+    openai.api_key = "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"
 
     # here we will be building the string that we will put into content
 
-    print(prompt)
+    # print(prompt)
 
     gpt4_results = openai.ChatCompletion.create(
         model="gpt-4",
@@ -55,9 +59,9 @@ def combine_json(oneformer, llava, query):
         ]
     )
 
-    print(gpt4_results)
+    # print(gpt4_results)
 
-    print(gpt4_results.choices[0]["message"]["content"])
+    # print(gpt4_results.choices[0]["message"]["content"])
 
     return gpt4_results.choices[0]["message"]["content"]
 
