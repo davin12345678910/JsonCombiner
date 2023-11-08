@@ -69,7 +69,7 @@ class JsonParser:
     """
     def return_final_json(self):
 
-        print("Called return_final_json")
+        # print("Called return_final_json")
 
         """
         check to see if any passed in jsons are None, if so return an exception
@@ -312,6 +312,8 @@ class JsonParser:
         text_candidates = ocr["results"]
         description_candidates = grit["results"]
 
+        # print("THESE ARE description canidates: ", description_candidates)
+
         """
         Here we will be adding all of the text into the hierachies if valid to do so 
         then we will add the descriptions to the hierachies given if valid to do so
@@ -322,13 +324,13 @@ class JsonParser:
             self.add_in_text(current_hierachy, text_candidates, visited_text)
 
 
+        # print(self.hierachy_dict)
         # this what we will be usign for LLaVA
         for current_grit in description_candidates:
 
-            print("LLaVA: ", current_grit)
-
-            # now we will need to set the corresponding hierachies description
-            self.hierachy_dict[current_grit["name"]].descriptions = current_grit["caption"]
+            if current_grit["name"] in self.hierachy_dict:
+                # now we will need to set the corresponding hierachies description
+                self.hierachy_dict[current_grit["name"]].descriptions = current_grit["caption"]
 
 
         # this we will need to use for GRiT
@@ -547,7 +549,7 @@ class JsonParser:
         final_json = {}
         final_json["items"] = hierachy_json_list
 
-        print("THIS IS THE FINAL JSON: ", final_json)
+        # print("THIS IS THE FINAL JSON: ", final_json)
         return json.dumps(final_json)
 
     """
