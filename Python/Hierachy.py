@@ -25,9 +25,11 @@ class Hierachy:
         self.polygon = polygon
         self.children = None
         self.object_label = object_label
-        self.text = None
-        self.descriptions = None
+        self.text = {}
+        self.descriptions = {}
+        self.descriptions2 = None
         self.is_child = False
+        self.include = True
 
     """
     Definition: this will set the text of the current hierachy  
