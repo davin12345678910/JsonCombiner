@@ -82,22 +82,21 @@ class JsonParser:
         """
         #1. This part will sort the maskRCNN objects by their size (in terms of area)
         """
-        mask_rcnn_objects = self.oneformer_json["results"]
-        mask_rcnn_objects = sorted(mask_rcnn_objects,
+        oneformer_objects = self.oneformer_json["results"]
+        oneformer_objects_sorted = sorted(oneformer_objects,
                 key=lambda x: Polygon(x["bbox"]).area)
 
+        # here we will be storing all of the object names
         object_names = []
-        for object in mask_rcnn_objects:
+        for object in oneformer_objects_sorted:
             object_names.append(object["name"])
-
-        # print("OBJECT NAMES: ", object_names)
 
         """
         #2. This part will iterate through objects from smallest to largest to determine parent/child 
         relationships between the objects in the maskRCNN object and will also make sure that 
         no object has a child of any of its child objects 
         """
-        layer_one_hierachy = self.get_first_layer(mask_rcnn_objects)
+        layer_one_hierachy = self.get_first_layer(oneformer_objects_sorted)
 
 
         """
@@ -134,12 +133,12 @@ class JsonParser:
     Return: a list of hierachy objects that contain the parent-child relationships between the objects
     that came from the mask_rcnn Json without text or descriptions (text or descriptions will be added in second layer)
     """
-    def get_first_layer(self, llava_objects):
+    def get_first_layer(self, oneformer_objects):
 
         """
         Make sure that the json given is not None, or else we will return an exception
         """
-        if llava_objects == None:
+        if oneformer_objects == None:
             raise Exception("Cannot give None mask_rcnn Json")
 
         """
@@ -154,9 +153,7 @@ class JsonParser:
         """
         hiearchies = []
 
-        for current_object in llava_objects:
-
-            # print("CURRENT_OBJECT: ", current_object["name"])
+        for current_object in oneformer_objects:
 
             # Create a Shapely Polygon object
             polygon = Polygon(current_object["bbox"])
@@ -188,10 +185,6 @@ class JsonParser:
                 intersection_area = current_polygon.intersection(other_polygon).area
                 percentage_overlap = intersection_area / other_polygon.area
                 if percentage_overlap >= self.OVERLAP_THRESHOLD:
-
-                    # print("OVERLAP: ", str(percentage_overlap))
-
-                    # print("OTHER HIERACHY: ", other_hierachy.object_label)
 
                     """
                     Here you will set other hierachies is_child to true 
@@ -515,7 +508,6 @@ class JsonParser:
         current_descriptions = current_hierachy.descriptions
         for description_canidate in description_canidates:
 
-            # print(description_canidate["label"])
             description_canidate_polygon = []
             x = round(float(description_canidate["bbox"][0]), 2)
             y = round(float(description_canidate["bbox"][1]), 2)
@@ -841,6 +833,7 @@ class JsonParser:
                 list.append(self.child_map[child])
         hierachy["children"] = list
 
+        # recurse through the rest of the hierachy
         for child in hierachy["children"]:
             self.update_hierachy(child, level + 1)
 
